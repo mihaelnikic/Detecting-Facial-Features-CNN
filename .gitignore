@@ -102,3 +102,6 @@ ENV/
 
 #ignore dataset
 dataset/kaggle/
+
+#idea
+.idea/
