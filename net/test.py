@@ -3,10 +3,9 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-from dataset import loader
+#from dataset import loader
+from dataset import image_loader
 
-"""from tensorflow.examples.tutorials.mnist import input_data
-data = input_data.read_data_sets("MNIST_data/", one_hot=True)"""
 
 # picture
 pic_w = 96
@@ -118,120 +117,29 @@ Y_predict = fc3
 
 update = tf.group(mau1, mau2, mau3, mau4, mau5, mau6, mau7)
 
-# cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=fc3, labels=Y_labels)
-# cross_entropy = tf.losses.absolute_difference(labels=Y_labels, predictions=Y_predict)
+
 cross_entropy = tf.losses.mean_squared_error(labels=Y_labels, predictions=Y_predict)
-# cross_entropy = tf.reduce_mean(cross_entropy)
-# optimizer = tf.train.AdamOptimizer(learning_rate = lr)
+
 optimizer = tf.train.RMSPropOptimizer(learning_rate=lr)
 minimize = optimizer.minimize(cross_entropy)
 
-"""predicted = tf.argmax(Y_predict, 1)
-true = tf.argmax(Y_labels,1)
-correct_predictions = tf.equal(predicted, true)
-accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))"""
+
 accuracy = tf.metrics.accuracy(labels=Y_labels, predictions=Y_predict)
 saver = tf.train.Saver()
 session = tf.Session()
-#session.run(tf.global_variables_initializer())
-#session.run(tf.local_variables_initializer())
+
 train_batch_size = 60
 test_batch_size = 10000
 num_iterations = 5000
 
-# for i in range(num_iterations):
-#
-#     max_learning_rate = 0.01
-#     min_learning_rate = 0.0001
-#     s = 7500
-#     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i / (s * 0.145))
-#
-#     x_train_batch, y_train_batch = loader.next_batch(60)
-#     feed_dict_train = {X: x_train_batch, Y_labels: y_train_batch, lr: learning_rate, p_keep: 0.8, is_test: False,
-#                        iteration: i}
-#     c1 = session.run(cl1,feed_dict=feed_dict_train)
-#     c2 = session.run(cl2,feed_dict=feed_dict_train)
-#     c3 = session.run(cl3,feed_dict=feed_dict_train)
-#     c4 = session.run(cl4,feed_dict=feed_dict_train)
-#     c5 = session.run(cl5,feed_dict=feed_dict_train)
-#     print(c1.shape)
-#     print(c2.shape)
-#     print(c3.shape)
-#     print(c4.shape)
-#     print(c5.shape)
-#     session.run(minimize, feed_dict=feed_dict_train)
-#     session.run(update, feed_dict=feed_dict_train)
-#     if (i % 100 == 0):
-#         x_train_batch, y_train_batch = loader.next_batch(100)
-#         feed_dict_train = {X: x_train_batch, Y_labels: y_train_batch, lr: learning_rate, p_keep: 0.6, is_test: True,
-#                            iteration: i}
-#         loss, acc = session.run([cross_entropy, accuracy], feed_dict=feed_dict_train)
-#         print("iter:", i, "loss:", loss, "acc:", acc)
 
-"""tf.add_to_collection('sir', Wc1)
-tf.add_to_collection('sir', Bc1)        
-tf.add_to_collection('sir', Wc2)        
-tf.add_to_collection('sir', Bc2)        
-tf.add_to_collection('sir', Wc3)        
-tf.add_to_collection('sir', Bc3)        
-tf.add_to_collection('sir', Wc4)        
-tf.add_to_collection('sir', Bc4)        
-tf.add_to_collection('sir', Wc5)        
-tf.add_to_collection('sir', Bc5)
-tf.add_to_collection('sir', Wf1)        
-tf.add_to_collection('sir', Bf1)        
-tf.add_to_collection('sir', Wf2)        
-tf.add_to_collection('sir', Bf2)        
-tf.add_to_collection('sir', Wf3)        
-tf.add_to_collection('sir', Bf3)"""
-"""x_test_batch=[]
-y_test_batch = []
-feed_dict_test = {X:x_test_batch, Y_labels:y_test_batch, lr:learning_rate, p_keep:1.0, is_test:True, iteration:4}
-acc, p,last_layer = session.run([accuracy,predicted,fc3], feed_dict=feed_dict_test)
-print("accuracy on 10000 test images -> {acc}".format(acc=acc))"""
-"""img,lbl,pred,a_strenght = collect_wrong_predictions(x_test_batch,y_test_batch,p, last_layer)
-plot_wrong_predictions(img, lbl,pred, a_strenght, bound=10)
-plt.show()
-img,lbl,pred,a_strenght = collect_right_predictions(x_test_batch,y_test_batch,p, last_layer)
-plot_wrong_predictions(img, lbl,pred, a_strenght, bound=10)
-plt.show()"""
 saver.restore(session, "/tmp/model.ckpt")
-x_train_batch, y_train_batch = loader.next_batch(1)
-image = x_train_batch[0]
-image_r = np.reshape(image, (96,96))
-plt.subplot(2,1,1)
-plt.imshow(image_r, cmap="gray")
-tocke = y_train_batch[0]
-tocke = tocke*48 + 48
-plt.scatter(tocke[::2], tocke[1::2], c="b")
-feed_dict_train = {X: x_train_batch, Y_labels: y_train_batch, lr: 0.01, p_keep: 0.8, is_test: True,
-                       iteration: 0}
+test_img = image_loader.read_image(image_file="/home/matija/Documents/virtualna_projekt/Detecting-Facial-Features-CNN/dataset/slike/Ivo_Sanader.jpg",
+                                   haarcascade_frontalface_file="/home/matija/Documents/virtualna_projekt/Detecting-Facial-Features-CNN/dataset/haarcascade_frontalface_default.xml")
+test_img = test_img/255.0
+plt.imshow(test_img, cmap="gray")
+feed_dict_train = {X: test_img.flatten().reshape(1,-1), lr: 0.01, p_keep: 0.8, is_test: True, iteration: 0}
 predicted = session.run(Y_predict, feed_dict= feed_dict_train)[0]
 predicted = predicted*48 + 48
 plt.scatter(predicted[::2], predicted[1::2], c="r")
-
-plt.subplot(2,1,2)
-flipped_image = x_train_batch.reshape(-1,1,96,96)[:,:,:,::-1]
-plt.imshow(flipped_image[0][0], cmap="gray")
-
-y_new = np.copy(y_train_batch)
-y_new[:, ::2] = y_new[:, ::2] * -1
-
-flip_indices = [
-    (0, 2), (1, 3),
-    (4, 8), (5, 9), (6, 10), (7, 11),
-    (12, 16), (13, 17), (14, 18), (15, 19),
-    (22, 24), (23, 25),
-    ]
-
-for a, b in flip_indices:
-    tmp = np.copy(y_new[:, a])
-    y_new[:, a]= y_new[:, b]
-    y_new[:, b]= tmp
-
-y_0_shifted = y_new[0]*48 + 48
-plt.scatter(y_0_shifted[::2], y_0_shifted[1::2], c="r")
 plt.show()
-
-
-

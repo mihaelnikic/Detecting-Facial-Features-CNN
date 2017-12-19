@@ -7,7 +7,6 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-from dataset import loader
 
 
 def read_image(image_file, haarcascade_frontalface_file):
@@ -31,5 +30,6 @@ def read_image(image_file, haarcascade_frontalface_file):
     # ax.add_patch(rect)
 
     za_treninanje_slika = grayscale_image[y:y+h, x:x+w]
+    resized = cv2.resize(za_treninanje_slika, (96, 96))
 
-    return za_treninanje_slika
+    return resized
