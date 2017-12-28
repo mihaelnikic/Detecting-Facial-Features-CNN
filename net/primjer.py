@@ -3,6 +3,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
+
 image = cv2.imread("/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/slike/Ivo_Sanader.jpg")
 grayscale_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 file = Path("/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/haarcascade_frontalface_default.xml")
@@ -24,7 +25,12 @@ plt.figure(dpi=250)
 # rect = patches.Rectangle((bb[0], bb[1]), bb[2], bb[3]
 #                          ,linewidth=1,edgecolor='r',facecolor='none')
 # ax.add_patch(rect)
-plt.imshow(grayscale_image[y:y+h, x:x+w], cmap="gray")
+za_treninanje_slika = grayscale_image[y:y+h, x:x+w]
+resized =  cv2.resize(za_treninanje_slika, (96, 96))
+plt.imshow(resized, cmap="gray")
 plt.show()
 
-za_treninanje_slika = grayscale_image[y:y+h, x:x+w]
+print(grayscale_image.shape)
+print(za_treninanje_slika.shape)
+print(resized.flatten().reshape(1,-1).shape)
+print()

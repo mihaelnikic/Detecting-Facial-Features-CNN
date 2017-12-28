@@ -6,8 +6,8 @@ from pandas.io.parsers import read_csv
 from sklearn.utils import shuffle
 import random
 
-FTRAIN = '/home/matija/Documents/virtualna_projekt/Detecting-Facial-Features-CNN/dataset/kaggle/training.csv'
-FTEST = '/home/matija/Documents/virtualna_projekt/Detecting-Facial-Features-CNN/dataset/kaggle/test.csv'
+FTRAIN = '/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/kaggle/training.csv'
+FTEST = '/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/kaggle/test.csv'
 
 
 def load(test=False, cols=None):
@@ -42,17 +42,26 @@ def load(test=False, cols=None):
     return X, y
 
 
-X_train, y_train = load()
-X_test, y_test = load(test=True)
-"""print("X.shape == {}; X.min == {:.3f}; X.max == {:.3f}".format(
-    X.shape, X.min(), X.max()))
-print("y.shape == {}; y.min == {:.3f}; y.max == {:.3f}".format(
-    y.shape, y.min(), y.max()))"""
+#X_train, y_train = load()
+#print("X.shape == {}; X.min == {:.3f}; X.max == {:.3f}".format(
+#    X_train.shape, X_train.min(), X_train.max()))
+#print("y.shape == {}; y.min == {:.3f}; y.max == {:.3f}".format(
+#    y_train.shape, y_train.min(), y_train.max()))
+#X_test, y_test = load(test=True)
 
-def next_batch(size, test = False):
-    if test:
-        index = random.randint(0,X_test.shape[0]-size)
-        return X_test[index:index+size]
-    else:
-        index = random.randint(0,X_train.shape[0]-size)
-        return X_train[index:index+size],y_train[index:index+size]
+
+def next_batch(X, y, size, iteration, test = False):
+    # if test:
+    #     if iteration == 0:
+    #         index = 0
+    #     else:
+    #         index = random.randint(0, X.shape[0] - size)
+    #     return X[index:index+size]
+    # else:
+    #     index = 0 if iteration == 0 else random.randint(0, X.shape[0] - size)
+    #     return X[index:index+size],y[index:index+size]
+    while True:
+        for k in range(0, len(X), size):
+            x_batch = X[k: k + size]
+            y_batch = y[k: k + size]
+            yield (x_batch, y_batch)

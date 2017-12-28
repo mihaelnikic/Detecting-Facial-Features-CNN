@@ -1,12 +1,5 @@
 import cv2
-from pathlib import Path
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import tensorflow as tf
-import math
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
 
 
 def read_image(image_file, haarcascade_frontalface_file):
@@ -32,4 +25,30 @@ def read_image(image_file, haarcascade_frontalface_file):
     za_treninanje_slika = grayscale_image[y:y+h, x:x+w]
     resized = cv2.resize(za_treninanje_slika, (96, 96))
 
-    return resized
+    return resized, image, bb
+
+def plot_image(network, image, load_file, normalize=True):
+    plt.figure(dpi=250)
+    if normalize:
+        image = image / 255.0
+
+    predicted = network.predict(image.reshape(1, -1), load_file=load_file)[0]
+    plt.imshow(image, cmap="gray")
+    predicted = predicted * 48 + 48
+    plt.scatter(predicted[::2], predicted[1::2], c="r")
+    plt.show()
+
+    return predicted
+
+def plot_original_image(original_image, predicted, bbox):
+    plt.figure(dpi=250)
+    x = bbox[0]
+    y = bbox[1]
+    w = bbox[2]
+    h = bbox[3]
+
+    plt.imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
+    plt.scatter(predicted[::2]*(121/96) + y, predicted[1::2]*(121/96) + x, c="w"
+                ,s=2)
+    plt.show()
+
