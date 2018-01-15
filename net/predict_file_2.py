@@ -80,8 +80,8 @@ cnn.build(input=input, output=output, optimizer=optimizer
           , loss=mse, metrics=[accuracy, rsq])
 
 test_img, original_image, bbox = image_loader.read_image(
-    image_file="/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/slike/Ivo_Sanader.jpg",
+    image_file="/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/slike/de_niro.jpg",
     haarcascade_frontalface_file="/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/haarcascade_frontalface_default.xml")
 
-predicted = image_loader.plot_image(cnn, test_img, "/tmp/model_2.ckpt")
+predicted = image_loader.plot_image(cnn, test_img, "/home/mihael/Documents/9. semestar/VIROKR/models/model2.ckpt")
 image_loader.plot_original_image(original_image, predicted, bbox)

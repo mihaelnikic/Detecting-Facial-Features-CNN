@@ -93,7 +93,9 @@ optimizer = RMSPropOptimizer(lr=lr)
 cnn.build(input=input, output=output, optimizer=optimizer
           , loss=mse, metrics=[accuracy, rsq])
 
-cnn.train(X_train, y_train, save_file="/tmp/model.ckpt", num_epochs=150)
+cnn.train(X_train, y_train, save_file="/home/mihael/Documents/9. semestar/VIROKR/models/model.ckpt", num_epochs=150)
+
+
 
 
 

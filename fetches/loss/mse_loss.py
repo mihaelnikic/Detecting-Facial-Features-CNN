@@ -18,7 +18,8 @@ class MeanSquaredErrorLoss(Loss):
         return "Loss(MSE) = " + str(value)
 
     def to_fetch(self):
-        loss = tf.losses.mean_squared_error(
-            labels=self.labels, predictions=self.predictions
-        )
+        with tf.name_scope('loss'):
+            loss = tf.losses.mean_squared_error(
+                labels=self.labels, predictions=self.predictions
+            )
         return loss

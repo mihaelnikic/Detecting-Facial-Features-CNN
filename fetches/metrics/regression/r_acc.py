@@ -17,9 +17,10 @@ class RegressionAccuracy(Metrics):
         return self.precision, self.correct_row
 
     def to_fetch(self):
-        self.accuracy = tf.reduce_mean(tf.cast(tf.equal(
-            tf.less_equal(tf.abs(tf.subtract(self.predictions, self.labels)), self.precision.placeholder),
-            self.correct_row.placeholder), tf.float32))
+        with tf.name_scope("accuracy"):
+            self.accuracy = tf.reduce_mean(tf.cast(tf.equal(
+                tf.less_equal(tf.abs(tf.subtract(self.predictions, self.labels)), self.precision.placeholder),
+                self.correct_row.placeholder), tf.float32))
         return self.accuracy
 
     def print_status(self, value):

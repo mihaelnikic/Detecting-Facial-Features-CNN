@@ -3,7 +3,7 @@ import os
 import numpy as np
 from pandas.io.parsers import read_csv
 from sklearn.utils import shuffle
-
+from sklearn.model_selection import train_test_split
 
 
 def load_dataset(fname, test=False, cols=None, reshaped=False):
@@ -35,6 +35,19 @@ def load_dataset(fname, test=False, cols=None, reshaped=False):
         y = None
 
     return X if not reshaped else X.reshape(-1, 96, 96, 1), y
+
+def load_dataset_spplited(fname, test=False):
+    """Loads data from FTEST if *test* is True, otherwise from FTRAIN.
+    Pass a list of *cols* if you're only interested in a subset of the
+    target columns.
+    """
+    X, y = load_dataset(fname)
+    print("cijeli=", X.shape, X.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.3, random_state=42, shuffle=True)
+
+    if test:
+        return X_test, y_test
+    return X_train, y_train
 
 # def get_flipped_dataset(fname, test=False, cols=None):
 #     X, y = load_dataset(fname=fname, test=test, cols=cols)

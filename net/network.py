@@ -112,12 +112,17 @@ class Network:
             self.feed_dict[p.placeholder] = p.get_update_value()
 
     def train(self, X, y, num_epochs=30, print_step=100, save_file=None,
-              load_file=None):
+              load_file=None, writer_file=None):
+        # summaries
+        tf.summary.scalar('loss', self.loss.to_fetch())
+        tf.summary.scalar('accuracy', self.metrics[1].to_fetch())
+        writer = tf.summary.FileWriter(writer_file)
         assert self.built
         self.is_test = False
         if save_file is not None or load_file is not None:
             saver = tf.train.Saver()
         self.sess = tf.Session()
+        writer.add_graph(self.sess.graph)
         if load_file is not None:
             saver.restore(self.sess, load_file)
         else:
@@ -139,6 +144,7 @@ class Network:
             if self.dataset_iter.get_iter_count() % print_step == 0:
                 self.is_test = True
                 self.update_metrics_dict()
+                self.add_summary(writer)
                 self.update_metrics(self.sess.run(self.metrics_fetches, self.metrics_dict))
                 self.is_test = False
         if save_file is not None:
@@ -147,17 +153,26 @@ class Network:
     def close_session(self):
         self.sess.close()
 
-    def evaluate(self, X, y, load_file=None):
+    def evaluate(self, X, y, load_file=None, writer_file=None):
+        # summaries
+        tf.summary.scalar('loss', self.loss.to_fetch())
+        tf.summary.scalar('accuracy', self.metrics[1].to_fetch())
+        writer = tf.summary.FileWriter(writer_file)
         assert self.built
+        if self.sess is None:
+            self.sess = tf.Session()
+        writer.add_graph(self.sess.graph)
         self.is_test = True
         if load_file is not None:
             saver = tf.train.Saver()
             if self.sess is not None:
                 self.sess.close()
             saver.restore(self.sess, load_file)
-        for _ in self.dataset_iter.iterate(X, y, 1):
+
+        for _ in self.dataset_iter.iterate(X, y, 10):
             self.update_feed_dict()
             self.update_metrics_dict()
+            self.add_summary(writer)
             self.update_metrics(self.sess.run(self.metrics_fetches, self.metrics_dict))
 
     def predict(self, x, load_file=None):
@@ -205,3 +220,8 @@ class Network:
         # def test_next_batch(self, X, y,  size):
         #     index = np.random.randint(0, X.shape[0] - size)
         #     return X[index:index + size], y[index:index + size]
+
+    def add_summary(self, writer):
+        merged = tf.summary.merge_all()
+        summary = self.sess.run(merged, self.metrics_dict)
+        writer.add_summary(summary, self.dataset_iter.get_iter_count())

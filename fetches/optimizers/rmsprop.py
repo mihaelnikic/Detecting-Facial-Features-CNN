@@ -14,7 +14,9 @@ class RMSPropOptimizer(Optimizer):
 
     def __init__(self, lr: LearningRate):
         self.lr = lr
-        self.optimizer = tf.train.RMSPropOptimizer(learning_rate=lr.placeholder)
+        with tf.name_scope("train"):
+            optimizer = tf.train.RMSPropOptimizer(learning_rate=lr.placeholder)
+        self.optimizer = optimizer
 
     def to_fetch(self):
         return self.optimizer.minimize(self.loss.to_fetch())

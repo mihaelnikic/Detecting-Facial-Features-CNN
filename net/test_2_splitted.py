@@ -1,6 +1,4 @@
-from batch.flipped_dataset_iterator import FlipDatasetIteratorWrapper
-from batch.std_data_iterator import StandardDatasetIterator
-from dataset.face_tracking_dataset import load_dataset
+from dataset.face_tracking_dataset import load_dataset_spplited
 from fetches.i_optimizer import Optimizer
 from fetches.loss.mse_loss import MeanSquaredErrorLoss
 from fetches.metrics.regression.r_acc import RegressionAccuracy
@@ -25,17 +23,17 @@ import random
 FTRAIN = '/home/mihael/Documents/9. semestar/VIROKR/Projekt/Detecting-Facial-Features-CNN/dataset/kaggle/training.csv'
 
 # dataset specs
-X_train, y_train = load_dataset(fname=FTRAIN, reshaped=True)
+X_test, y_test = load_dataset_spplited(fname=FTRAIN, test=True)
+print("splitted=", X_test.shape, y_test.shape)
 pic_width = 96
 pic_height = 96
 pic_channels = 1 # grayscale
 num_classes = 15 * 2
 # other
-input = PicturePlaceholder(sample_input_shape=[pic_height, pic_width, pic_channels], is_reshaped=True)
+input = PicturePlaceholder(sample_input_shape=[pic_height, pic_width, pic_channels])
 output = LabelsPlaceholder(num_classes=num_classes)
 
-diter = FlipDatasetIteratorWrapper(StandardDatasetIterator())
-cnn = Network(dataset_iter=diter)
+cnn = Network()
 # First CNN layer
 cnn.add_layer(BatchNormLayer(name="batch_norm1"))\
     .add_layer(ConvolutionalLayer(name="conv1", filter_size=5, num_filters=24, strides=[1, 1, 1, 1])) \
@@ -84,7 +82,8 @@ optimizer = RMSPropOptimizer(lr=lr)
 cnn.build(input=input, output=output, optimizer=optimizer
           , loss=mse, metrics=[accuracy, rsq])
 
-cnn.train(X_train, y_train, save_file="/home/mihael/Documents/9. semestar/VIROKR/models/model3.ckpt", num_epochs=100)
+cnn.evaluate(X_test, y_test, load_file="/home/mihael/Documents/9. semestar/VIROKR/split_models/model2_2.ckpt",
+          writer_file="/home/mihael/Documents/9. semestar/VIROKR/split_models/test_2_2")
 
 
 

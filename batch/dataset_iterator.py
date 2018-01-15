@@ -9,7 +9,7 @@ class DatasetIterator:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, batcher: Batcher):
-        self.batcher = batcher if batcher is not None else StandardMiniBatcher(DEFAULT_BATCH_SIZE, True)
+        self.batcher = batcher
 
     def iterate(self, X, y=None, num_iter: int = 5000):
         raise NotImplementedError()
