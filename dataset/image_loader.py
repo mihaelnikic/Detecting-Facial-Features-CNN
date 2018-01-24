@@ -8,7 +8,7 @@ def read_image(image_file, haarcascade_frontalface_file):
     face_cascade = cv2.CascadeClassifier(haarcascade_frontalface_file)
 
     bounding_boxes = face_cascade.detectMultiScale(grayscale_image, 1.25, 6)
-    print(bounding_boxes[0])
+    #print(bounding_boxes[0])
     bb = bounding_boxes[0]
     x = bb[0]
     y = bb[1]
